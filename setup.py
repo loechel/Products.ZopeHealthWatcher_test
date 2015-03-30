@@ -1,0 +1,35 @@
+# -*- coding: utf8 -*-
+
+import os
+from setuptools import setup, find_packages
+
+README = os.path.join(os.path.dirname(__file__),
+                      'README.rst')
+
+setup(name='Products.ZopeHealthWatcher',
+      version='1.0',
+      description='Monitors A Zope server.',
+      long_description=open(README).read(),
+      author='Tarek Ziade',
+      author_email='tarek@ziade.org',
+      url='http://github.com/collective/Products.ZopeHealthWatcher',
+      packages=find_packages(),
+      namespace_packages=['Products'],
+      install_requires=[
+          'setuptools',
+          'Mako'
+      ],
+      classifiers=[
+          "Framework :: Plone",
+          "Framework :: Zope2",
+          "Programming Language :: Python",
+          "Topic :: Software Development :: Libraries :: Python Modules",
+      ],
+      tests_require=['Nose'],
+      test_suite='nose.collector',
+      include_package_data=True,
+      entry_points={
+          "console_scripts": [
+              "zHealthWatcher = Products.ZopeHealthWatcher.check_zope:main",
+          ]}
+      )
