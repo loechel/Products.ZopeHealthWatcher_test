@@ -20,27 +20,18 @@
 ZServer hook to dump a traceback of the running python threads.
 """
 import os
-import sys
 import thread
 import traceback
 from cStringIO import StringIO
 from mako.template import Template
 
-from Products.ZopeHealthWatcher.check_zope import ZopeHealthWatcher as zhw
+from Products.ZopeHealthWatcher.check_zope import config
 from Products.ZopeHealthWatcher.modules import MODULES
-
-try:
-    from zLOG import LOG, DEBUG
-except ImportError:
-    DEBUG = 1
-    import logging
-
-    def _log(title, level, msg):
-        if level == DEBUG:
-            logging.debug('%s: %s' % (title, msg))
-        else:
-            logging.info('%s: %s' % (title, msg))
-    LOG = _log
+from Products.ZopeHealthWatcher.zhw_logger import LOG
+from Products.ZopeHealthWatcher.zhw_logger import DEBUG
+#from Products.ZopeHealthWatcher.zhw_logger import Info
+#from Products.ZopeHealthWatcher.zhw_logger import WARNING
+#from Products.ZopeHealthWatcher.zhw_logger import ERROR
 
 
 def dump_modules():
@@ -53,8 +44,11 @@ def dump_threads():
     Returns a string with the tracebacks.
     """
     res = []
-    frames = sys._current_frames()
-    print('Frames: %s' % len(frames))
+    frames = config.frames
+    LOG('Products.ZopeHealthWatcher',
+        DEBUG,
+        'Number of Frames: %s' % str(len(frames)-1))
+#    import ipdb; ipdb.set_trace()
     this_thread_id = thread.get_ident()
 
     for thread_id, frame in frames.iteritems():
@@ -101,7 +95,7 @@ def dump_threads():
 def match(self, request):
     uri = request.uri
     # added hook
-    if uri.endswith(zhw.sdump_url):
+    if uri.endswith(config.SDUMP_URL):
         user_agent = request.get_header('User-Agent')
         if user_agent == 'ZopeHealthController':  # CLI Request
             # text version
